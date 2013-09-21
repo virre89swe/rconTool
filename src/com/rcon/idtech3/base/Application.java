@@ -5,7 +5,8 @@ import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
 import com.rcon.idtech3.controller.Controller;
-import com.rcon.idtech3.model.Model;
+import com.rcon.idtech3.model.ServerCod4Model;
+import com.rcon.idtech3.model.SettingsModel;
 import com.rcon.idtech3.view.View;
 
 public class Application 
@@ -25,14 +26,21 @@ public class Application
 		});
 	}
 	
+	// MVC Asynchronous instance
 	public static void RunApplication()
 	{
-		Model model = new Model();
-		View view = new View(model);
+		// Model(s)
+		SettingsModel settingsModel = new SettingsModel();
+		ServerCod4Model serverCod4Model = new ServerCod4Model();
 		
-		Controller controller = new Controller(view,model);
+		// View
+		View view = new View(settingsModel);
 		
-		view.SetSaveListener(controller);
+		// Controller
+		Controller controller = new Controller(view,settingsModel);
+		
+		// Listens
+		view.SetSettingsListener(controller);
 	}
 
 }

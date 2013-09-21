@@ -20,10 +20,15 @@ import javax.swing.JTabbedPane;
 import javax.swing.SpringLayout;
 import javax.swing.border.EmptyBorder;
 
+
 //import com.rcon.idtech3.controller.Controller;
-import com.rcon.idtech3.model.Model;
+import com.rcon.idtech3.model.SettingsModel;
+
 import javax.swing.JTextArea;
+
 import java.awt.Font;
+import java.awt.event.TextListener;
+import java.awt.event.TextEvent;
 
 @SuppressWarnings("serial")
 public class View extends JFrame implements ActionListener
@@ -32,20 +37,20 @@ public class View extends JFrame implements ActionListener
 	private TextField settingsPortField;
 	private TextField settingsRconPField;
 	
-	private Model model;
+	private SettingsModel settingsModel;
 	private JPanel contentPane;
 	
-	private SaveListener saveListener;
+	private SettingsActionListener settingsListener;
 	
 	// Constants
 	private final String LABEL_SETTINGS_SAVE = "Save";
 	private final String LABEL_SETTINGS_TEST = "Test Connection";
 	private final String LABEL_CMD_GETSTATUS = "Get Status";
 
-	public View(Model model) throws HeadlessException
+	public View(SettingsModel model) throws HeadlessException
 	{
 		super("Remote Console : Id Tech 3");
-		this.model = model;
+		this.settingsModel = model;
 		
 		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -83,7 +88,7 @@ public class View extends JFrame implements ActionListener
 		panel.setLayout(sl_panel);
 		
 		this.settingsIpField = new TextField();
-		this.settingsIpField.setText(this.model.GetIp());
+		this.settingsIpField.setText(this.settingsModel.GetIp());
 
 		sl_panel.putConstraint(SpringLayout.NORTH, this.settingsIpField, 10, SpringLayout.NORTH, panel);
 		sl_panel.putConstraint(SpringLayout.WEST, this.settingsIpField, 79, SpringLayout.WEST, panel);
@@ -107,7 +112,7 @@ public class View extends JFrame implements ActionListener
 		panel.add(lblNewLabel_1);
 		
 		this.settingsPortField = new TextField();
-		this.settingsPortField.setText(this.model.GetPort());
+		this.settingsPortField.setText(this.settingsModel.GetPort());
 		
 		sl_panel.putConstraint(SpringLayout.NORTH, this.settingsPortField, 10, SpringLayout.NORTH, panel);
 		sl_panel.putConstraint(SpringLayout.WEST, this.settingsPortField, 233, SpringLayout.WEST, panel);
@@ -118,7 +123,7 @@ public class View extends JFrame implements ActionListener
 		panel.add(this.settingsPortField);
 		
 		this.settingsRconPField = new TextField();
-		this.settingsRconPField.setText(this.model.GetRconPass());
+		this.settingsRconPField.setText(this.settingsModel.GetRconPass());
 		
 		sl_panel.putConstraint(SpringLayout.NORTH, this.settingsRconPField, 49, SpringLayout.NORTH, panel);
 		sl_panel.putConstraint(SpringLayout.WEST, this.settingsRconPField, 79, SpringLayout.WEST, panel);
@@ -181,7 +186,10 @@ public class View extends JFrame implements ActionListener
 		
 		setVisible(true);
 	}
-
+	
+	/*
+	 *  Casts the source to JButton and fires relevant event which bubbles to controller
+	 */
 	@Override
 	public void actionPerformed(ActionEvent e)
 	{
@@ -190,27 +198,45 @@ public class View extends JFrame implements ActionListener
 		
 		if(mySource.getText() == LABEL_SETTINGS_SAVE)
 		{
-			this.FireSaveSettingsEvent(new SaveSettingsEvent(this.settingsIpField.getText(),this.settingsPortField.getText(),this.settingsRconPField.getText()));
+			this.FireSaveSettingsEvent(new SettingsActionEvent(this.settingsIpField.getText(),this.settingsPortField.getText(),this.settingsRconPField.getText()));
 		}
 		
 		
-		if(mySource.getText() == LABEL_CMD_GETSTATUS)
+		if(mySource.getText() == LABEL_SETTINGS_TEST)
 		{
-			System.out.print("Ip: " + this.model.GetIp());
+			this.FireTestConnSettingsEvent(new SettingsActionEvent(this.settingsIpField.getText(),this.settingsPortField.getText(),this.settingsRconPField.getText()));
 		}
-	}
-
-	public void SetSaveListener(SaveListener saveListener)
-	{
-		this.saveListener = saveListener;
-		
 	}
 	
-	public void FireSaveSettingsEvent(SaveSettingsEvent event)
-	{
-		if(this.saveListener != null)
+	// Save
+	public void FireSaveSettingsEvent(SettingsActionEvent event)
+	{		
+		if(this.settingsListener != null)
 		{
-			this.saveListener.SaveAction(event);
+			this.settingsListener.SaveAction(event);
 		}
+	}
+	
+	// TestConn
+	public void FireTestConnSettingsEvent(SettingsActionEvent event)
+	{
+		//System.out.println("Before: " + this.model.GetRconPass());
+		
+		if(this.settingsListener != null)
+		{
+			this.settingsListener.TestConnAction(event);
+			//System.out.println("This is returnValue: " + hmm);
+		}
+		
+		//System.out.println("After: " + this.model.GetRconPass());
+	}
+	
+	/*
+	 * Listeners
+	 */
+	public void SetSettingsListener(SettingsActionListener settingsListener)
+	{
+		this.settingsListener = settingsListener;
+		
 	}
 }

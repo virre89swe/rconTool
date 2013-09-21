@@ -1,12 +1,12 @@
 package com.rcon.idtech3.view;
 
-public class SaveSettingsEvent
+public class SettingsActionEvent
 {
 	private String ip;
 	private String port;
 	private String rconPass;
 	
-	public SaveSettingsEvent(String ip, String port, String rconPass)
+	public SettingsActionEvent(String ip, String port, String rconPass)
 	{
 		this.ip = ip;
 		this.port = port;

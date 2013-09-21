@@ -5,13 +5,13 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.util.Properties;
 
-public class Model
+public class SettingsModel
 {
 	private String ip;
 	private String port;
 	private String rconPass;
 	
-	public Model()
+	public SettingsModel()
 	{
 		this.SettingsLoadConfiguration();
 	}
@@ -60,6 +60,13 @@ public class Model
 		{
 			e.printStackTrace();
 		}
+	}
+	
+	// Attempts connection
+	public void SettingsTestConn()
+	{
+		
+		
 	}
 	
 	// Getters

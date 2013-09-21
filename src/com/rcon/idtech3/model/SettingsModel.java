@@ -19,7 +19,7 @@ public class SettingsModel
 	
 	// Save Settings
 	@SuppressWarnings("deprecation")
-	public void SettingsSaveConfiguration(String ip, String port, String rconPass)
+	public boolean SettingsSaveConfiguration(String ip, String port, String rconPass)
 	{
 		try(FileReader reader = new FileReader("globals.properties")) 
 		{
@@ -36,11 +36,13 @@ public class SettingsModel
 			this.ip = ip;
 			this.port = port;
 			this.rconPass = rconPass;
+			return true;
 			
 		}
 		catch(Exception e) 
 		{
 			e.printStackTrace();
+			return false;
 		}
 	}
 	
@@ -60,13 +62,6 @@ public class SettingsModel
 		{
 			e.printStackTrace();
 		}
-	}
-	
-	// Attempts connection
-	public void SettingsTestConn()
-	{
-		
-		
 	}
 	
 	// Getters

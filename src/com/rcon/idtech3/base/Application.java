@@ -34,10 +34,10 @@ public class Application
 		ServerCod4Model serverCod4Model = new ServerCod4Model();
 		
 		// View
-		View view = new View(settingsModel);
+		View view = new View(settingsModel,serverCod4Model);
 		
 		// Controller
-		Controller controller = new Controller(view,settingsModel);
+		Controller controller = new Controller(view,settingsModel,serverCod4Model);
 		
 		// Listens
 		view.SetSettingsListener(controller);

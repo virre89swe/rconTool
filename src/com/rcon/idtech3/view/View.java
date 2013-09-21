@@ -3,11 +3,14 @@ package com.rcon.idtech3.view;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.HeadlessException;
 import java.awt.Label;
 import java.awt.TextField;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -17,41 +20,49 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
+import javax.swing.JTextArea;
 import javax.swing.SpringLayout;
 import javax.swing.border.EmptyBorder;
 
-
+import com.rcon.idtech3.model.ServerCod4Model;
 //import com.rcon.idtech3.controller.Controller;
 import com.rcon.idtech3.model.SettingsModel;
-
-import javax.swing.JTextArea;
-
-import java.awt.Font;
-import java.awt.event.TextListener;
-import java.awt.event.TextEvent;
 
 @SuppressWarnings("serial")
 public class View extends JFrame implements ActionListener
 {
+	private JLabel settingsStatusLabel;
+	
 	private TextField settingsIpField;
 	private TextField settingsPortField;
 	private TextField settingsRconPField;
 	
 	private SettingsModel settingsModel;
+	private ServerCod4Model serverCod4Model;
 	private JPanel contentPane;
 	
 	private SettingsActionListener settingsListener;
 	
 	// Constants
 	private final String LABEL_SETTINGS_SAVE = "Save";
-	private final String LABEL_SETTINGS_TEST = "Test Connection";
+	private final String LABEL_SETTINGS_TEST = "Connect";
 	private final String LABEL_CMD_GETSTATUS = "Get Status";
 
-	public View(SettingsModel model) throws HeadlessException
+	public View(SettingsModel settingsModel, ServerCod4Model serverCod4Model) throws HeadlessException
 	{
 		super("Remote Console : Id Tech 3");
-		this.settingsModel = model;
 		
+		// AppIcon
+		try
+		{
+			URL url = new URL("com/xyz/resources/camera.png");
+		} catch (MalformedURLException e1)
+		{
+			e1.printStackTrace();
+		}
+		
+		this.settingsModel = settingsModel;
+		this.serverCod4Model = serverCod4Model;
 		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 584, 384);
@@ -151,6 +162,13 @@ public class View extends JFrame implements ActionListener
 		sl_panel.putConstraint(SpringLayout.EAST, btnSave, -10, SpringLayout.EAST, panel);
 		panel.add(btnSave);
 		
+		settingsStatusLabel = new JLabel("");
+		settingsStatusLabel.setForeground(new Color(0, 128, 0));
+		settingsStatusLabel.setFont(new Font("Arial", Font.BOLD, 13));
+		sl_panel.putConstraint(SpringLayout.NORTH, settingsStatusLabel, 0, SpringLayout.NORTH, btnNewButton);
+		sl_panel.putConstraint(SpringLayout.WEST, settingsStatusLabel, 0, SpringLayout.WEST, settingsPortField);
+		panel.add(settingsStatusLabel);
+		
 		
 		JPanel panel_1 = new JPanel();
 		panel_1.setBackground(Color.WHITE);
@@ -188,7 +206,7 @@ public class View extends JFrame implements ActionListener
 	}
 	
 	/*
-	 *  Casts the source to JButton and fires relevant event which bubbles to controller
+	 *  Casts the source to JButton and fires relevant event(s) which bubbles to controller
 	 */
 	@Override
 	public void actionPerformed(ActionEvent e)
@@ -208,12 +226,18 @@ public class View extends JFrame implements ActionListener
 		}
 	}
 	
-	// Save
+	/*
+	 * Fires save event
+	 * Sets save-status label depending on boolean
+	 */
 	public void FireSaveSettingsEvent(SettingsActionEvent event)
 	{		
 		if(this.settingsListener != null)
 		{
-			this.settingsListener.SaveAction(event);
+			if(this.settingsListener.SaveAction(event))
+			{
+				this.settingsStatusLabel.setText("Configuration stored");
+			}
 		}
 	}
 	

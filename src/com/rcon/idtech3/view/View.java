@@ -9,8 +9,6 @@ import java.awt.Label;
 import java.awt.TextField;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.net.MalformedURLException;
-import java.net.URL;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -53,13 +51,13 @@ public class View extends JFrame implements ActionListener
 		super("Remote Console : Id Tech 3");
 		
 		// AppIcon
-		try
+		/*try
 		{
 			URL url = new URL("com/xyz/resources/camera.png");
 		} catch (MalformedURLException e1)
 		{
 			e1.printStackTrace();
-		}
+		}*/
 		
 		this.settingsModel = settingsModel;
 		this.serverCod4Model = serverCod4Model;
@@ -163,10 +161,11 @@ public class View extends JFrame implements ActionListener
 		panel.add(btnSave);
 		
 		settingsStatusLabel = new JLabel("");
-		settingsStatusLabel.setForeground(new Color(0, 128, 0));
+		sl_panel.putConstraint(SpringLayout.NORTH, settingsStatusLabel, 3, SpringLayout.NORTH, btnNewButton);
+		sl_panel.putConstraint(SpringLayout.WEST, settingsStatusLabel, 0, SpringLayout.WEST, lblNewLabel);
+		sl_panel.putConstraint(SpringLayout.EAST, settingsStatusLabel, 361, SpringLayout.WEST, lblNewLabel);
+		settingsStatusLabel.setForeground(new Color(46, 139, 87));
 		settingsStatusLabel.setFont(new Font("Arial", Font.BOLD, 13));
-		sl_panel.putConstraint(SpringLayout.NORTH, settingsStatusLabel, 0, SpringLayout.NORTH, btnNewButton);
-		sl_panel.putConstraint(SpringLayout.WEST, settingsStatusLabel, 0, SpringLayout.WEST, settingsPortField);
 		panel.add(settingsStatusLabel);
 		
 		
@@ -236,6 +235,7 @@ public class View extends JFrame implements ActionListener
 		{
 			if(this.settingsListener.SaveAction(event))
 			{
+				this.settingsStatusLabel.setForeground(new Color(46, 139, 87));
 				this.settingsStatusLabel.setText("Configuration stored");
 			}
 		}
@@ -243,16 +243,21 @@ public class View extends JFrame implements ActionListener
 	
 	// TestConn
 	public void FireTestConnSettingsEvent(SettingsActionEvent event)
-	{
-		//System.out.println("Before: " + this.model.GetRconPass());
-		
+	{		
 		if(this.settingsListener != null)
 		{
-			this.settingsListener.TestConnAction(event);
-			//System.out.println("This is returnValue: " + hmm);
+			String response = this.settingsListener.TestConnAction(event);
+			if(response == null)
+			{
+				this.settingsStatusLabel.setForeground(new Color(178,34,34));
+				this.settingsStatusLabel.setText("Connection timeout, check port & ip");
+			}
+			else
+			{
+				this.settingsStatusLabel.setForeground(new Color(46, 139, 87));
+				this.settingsStatusLabel.setText("Connection seems ok (rcon not tested)");
+			}
 		}
-		
-		//System.out.println("After: " + this.model.GetRconPass());
 	}
 	
 	/*

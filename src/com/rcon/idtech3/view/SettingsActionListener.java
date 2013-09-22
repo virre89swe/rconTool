@@ -4,6 +4,6 @@ public interface SettingsActionListener
 {
 	public boolean SaveAction(SettingsActionEvent event);
 	
-	public void TestConnAction(SettingsActionEvent event);
+	public String TestConnAction(SettingsActionEvent event);
 	
 }

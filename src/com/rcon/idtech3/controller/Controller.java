@@ -40,11 +40,7 @@ public class Controller implements SettingsActionListener
 	
 	public String TestConnAction(SettingsActionEvent event)
 	{
-		//this.model.SettingsTestConn();
-		//System.out.println(event.GetIp() + " B4..");
 		String value = this.serverCod4Model.SendSrvCmd(this.settingsModel.GetIp(), this.settingsModel.GetPort(),null,null);
-		//System.out.println(event.GetIp() + " AF..");
-		//System.out.println("SettingsModelIpValue: " + this.settingsModel.GetIp());
 		System.out.println(value);
 		return value;
 		

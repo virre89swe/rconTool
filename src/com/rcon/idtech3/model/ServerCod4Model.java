@@ -60,7 +60,6 @@ public class ServerCod4Model extends ServerModel
 				
 				dp = new DatagramPacket(buff, buff.length, ia, portInt);
 				ds.send(dp);
-				System.out.println("ConnectionWorks");
 				try
 				{
 					buff = new byte[65507];
@@ -69,15 +68,12 @@ public class ServerCod4Model extends ServerModel
 					ds.receive(dp);	
 					
 					response = new String(buff);
-					String[] parts = response.split("\\\\");
-					String part1 = parts[2];
-					part1 = part1.replace("_", "");
-					System.out.println(part1);
 					System.out.println(response);
 				}
 				catch(SocketTimeoutException e)
 				{
 					System.out.println("Timeout with socket");
+					e.printStackTrace();
 				}
 			}
 			catch(Exception e)
@@ -85,7 +81,6 @@ public class ServerCod4Model extends ServerModel
 				e.printStackTrace();
 			}
 		}
-		
 		return response;
 	}
 }

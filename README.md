@@ -1,6 +1,11 @@
 ---------
-Remote console application 
-Engine target is ID Tech 3 
-Game target is Call of Duty 4
-Developed by Viktor Karlsson 2013
----------
+Remote console application , ID Tech 3 <br/><br/>
+
+Application Credits:<br/>
+Developed 2013 by Viktor Karlsson<br/><br/> 
+
+AppIcon Credits:<br/>
+Creative Commons license <br/>
+Icon origin : Id Software <br/>
+Icon creator :  Christian F. Burprich - http://chrfb.deviantart.com <br/>
+

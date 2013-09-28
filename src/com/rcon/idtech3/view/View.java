@@ -72,8 +72,8 @@ public class View extends JFrame implements ActionListener,TextListener
 		
 		
 
-		// AppIcon
-		this.setIconImage(Toolkit.getDefaultToolkit().getImage(PATH_ASSETS_IMAGES + "quakeIcon.png"));
+		// AppIcon (from source folder)
+		this.setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource(PATH_ASSETS_IMAGES + "quakeIcon.png")));
 		
 		this.presentDataView = new PresentDataView(this);		
 		this.settingsModel = settingsModel;

@@ -21,7 +21,7 @@ public class SettingsModel
 	@SuppressWarnings("deprecation")
 	public boolean SettingsSaveConfiguration(String ip, String port, String rconPass)
 	{
-		try(FileReader reader = new FileReader("globals.properties")) 
+		try(FileReader reader = new FileReader("./globals.properties")) 
 		{
 			Properties prop = new Properties();
 			prop.load(reader);
@@ -30,7 +30,7 @@ public class SettingsModel
 			prop.setProperty("settingsConf.port", port);
 			prop.setProperty("settingsConf.rcon", rconPass);
 			
-			prop.save(new FileOutputStream(new File("globals.properties")), "");
+			prop.save(new FileOutputStream(new File("./globals.properties")), "");
 			
 			
 			this.ip = ip;
@@ -49,7 +49,7 @@ public class SettingsModel
 	// Load settings when initializing model
 	public void SettingsLoadConfiguration()
 	{
-		try (FileReader reader = new FileReader("globals.properties"))
+		try (FileReader reader = new FileReader("./globals.properties"))
 		{
 			Properties prop = new Properties();
 			prop.load(reader);

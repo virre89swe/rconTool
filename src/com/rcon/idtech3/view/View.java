@@ -7,6 +7,7 @@ import java.awt.Font;
 import java.awt.HeadlessException;
 import java.awt.Label;
 import java.awt.TextField;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.TextEvent;
@@ -24,9 +25,9 @@ import javax.swing.JTextArea;
 import javax.swing.SpringLayout;
 import javax.swing.border.EmptyBorder;
 
-import com.rcon.idtech3.model.ServerCod4Model;
-//import com.rcon.idtech3.controller.Controller;
 import com.rcon.idtech3.model.SettingsModel;
+
+import static com.rcon.idtech3.view.Constants.*;
 
 @SuppressWarnings("serial")
 public class View extends JFrame implements ActionListener,TextListener
@@ -44,41 +45,38 @@ public class View extends JFrame implements ActionListener,TextListener
 	protected JLabel punkbuster;
 	protected JLabel pure;
 	
-	// Fields
+	// Flag
+	private boolean lastConnStatus = false;
+	
+	// Fields & Areas
+	private TextField inputCmdField;
+	
 	private TextField settingsIpField;
 	private TextField settingsPortField;
 	private TextField settingsRconPField;
 	
+	private JTextArea srvResponseConsole;
+	
 	private SettingsModel settingsModel;
-	@SuppressWarnings("unused")
-	private ServerCod4Model serverCod4Model;
 	private JPanel contentPane;
 	
-	private SettingsActionListener settingsListener;
+	/* --- */
 	
-	// Constants
-	private final String LABEL_SETTINGS_SAVE = "Save";
-	private final String LABEL_SETTINGS_TEST = "Connect";
-	private final String LABEL_CMD_GETSTATUS = "Get Status";
-
-	public View(SettingsModel settingsModel, ServerCod4Model serverCod4Model) throws HeadlessException
+	private ISettingsActionListener settingsListener;
+	
+	
+	//TODO Split into separate Layout-view
+	public View(SettingsModel settingsModel) throws HeadlessException
 	{
 		super("Remote Console : Id Tech 3");
 		
-		// Initialize sub-views
-		this.presentDataView = new PresentDataView(this);
 		
+
 		// AppIcon
-		/*try
-		{
-			URL url = new URL("com/xyz/resources/camera.png");
-		} catch (MalformedURLException e1)
-		{
-			e1.printStackTrace();
-		}*/
+		this.setIconImage(Toolkit.getDefaultToolkit().getImage(PATH_ASSETS_IMAGES + "quakeIcon.png"));
 		
+		this.presentDataView = new PresentDataView(this);		
 		this.settingsModel = settingsModel;
-		this.serverCod4Model = serverCod4Model;
 		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 584, 384);
@@ -169,7 +167,7 @@ public class View extends JFrame implements ActionListener,TextListener
 		sl_panel.putConstraint(SpringLayout.EAST, lblRconPass, 73, SpringLayout.WEST, panel);
 		panel.add(lblRconPass);
 		
-		JButton btnNewButton = new JButton(LABEL_SETTINGS_TEST);
+		JButton btnNewButton = new JButton(LABEL_SETTINGS_CONNECT);
 		btnNewButton.addActionListener(this);
 		panel.add(btnNewButton);
 		
@@ -201,12 +199,12 @@ public class View extends JFrame implements ActionListener,TextListener
 		sl_panel_2.putConstraint(SpringLayout.EAST, lblMap, 56, SpringLayout.WEST, panel_2);
 		panel_2.add(lblMap);
 		
-		currentMap = new JLabel("<not active>");
+		currentMap = new JLabel(LABEL_STATUS_INACTIVE);
 		sl_panel_2.putConstraint(SpringLayout.NORTH, currentMap, 0, SpringLayout.NORTH, lblMap);
 		sl_panel_2.putConstraint(SpringLayout.WEST, currentMap, 20, SpringLayout.EAST, lblMap);
 		panel_2.add(currentMap);
 		
-		servername = new JLabel("<not active>");
+		servername = new JLabel(LABEL_STATUS_INACTIVE);
 		servername.setFont(new Font("Utsaah", Font.BOLD, 17));
 		sl_panel_2.putConstraint(SpringLayout.NORTH, servername, 10, SpringLayout.NORTH, panel_2);
 		sl_panel_2.putConstraint(SpringLayout.WEST, servername, 202, SpringLayout.WEST, panel_2);
@@ -218,7 +216,7 @@ public class View extends JFrame implements ActionListener,TextListener
 		sl_panel_2.putConstraint(SpringLayout.EAST, lblGametype, 68, SpringLayout.WEST, panel_2);
 		panel_2.add(lblGametype);
 		
-		gametype = new JLabel("<not active>");
+		gametype = new JLabel(LABEL_STATUS_INACTIVE);
 		sl_panel_2.putConstraint(SpringLayout.NORTH, gametype, 0, SpringLayout.NORTH, lblGametype);
 		sl_panel_2.putConstraint(SpringLayout.WEST, gametype, 0, SpringLayout.WEST, currentMap);
 		panel_2.add(gametype);
@@ -239,18 +237,18 @@ public class View extends JFrame implements ActionListener,TextListener
 		sl_panel_2.putConstraint(SpringLayout.WEST, lblPure, 0, SpringLayout.WEST, lblMap);
 		panel_2.add(lblPure);
 		
-		password = new JLabel("<not active>");
+		password = new JLabel(LABEL_STATUS_INACTIVE);
 		sl_panel_2.putConstraint(SpringLayout.NORTH, password, 0, SpringLayout.NORTH, lblPassword);
 		sl_panel_2.putConstraint(SpringLayout.WEST, password, 0, SpringLayout.WEST, currentMap);
 		panel_2.add(password);
 		
-		punkbuster = new JLabel("<not active>");
+		punkbuster = new JLabel(LABEL_STATUS_INACTIVE);
 		sl_panel_2.putConstraint(SpringLayout.NORTH, punkbuster, 24, SpringLayout.SOUTH, password);
 		sl_panel_2.putConstraint(SpringLayout.WEST, punkbuster, 0, SpringLayout.WEST, currentMap);
 		sl_panel_2.putConstraint(SpringLayout.EAST, punkbuster, 0, SpringLayout.EAST, currentMap);
 		panel_2.add(punkbuster);
 		
-		pure = new JLabel("<not active>");
+		pure = new JLabel(LABEL_STATUS_INACTIVE);
 		sl_panel_2.putConstraint(SpringLayout.NORTH, pure, 0, SpringLayout.NORTH, lblPure);
 		sl_panel_2.putConstraint(SpringLayout.WEST, pure, 0, SpringLayout.WEST, currentMap);
 		panel_2.add(pure);
@@ -262,27 +260,34 @@ public class View extends JFrame implements ActionListener,TextListener
 		SpringLayout sl_panel_1 = new SpringLayout();
 		panel_1.setLayout(sl_panel_1);
 		
-		JButton srvCmdGetStatusBtn = new JButton(LABEL_CMD_GETSTATUS);
-		srvCmdGetStatusBtn.addActionListener(this);
-		sl_panel_1.putConstraint(SpringLayout.NORTH, srvCmdGetStatusBtn, 10, SpringLayout.NORTH, panel_1);
-		sl_panel_1.putConstraint(SpringLayout.WEST, srvCmdGetStatusBtn, 10, SpringLayout.WEST, panel_1);
-		panel_1.add(srvCmdGetStatusBtn);
+		JButton cmdSendBtn = new JButton(LABEL_CMD_INPUT);
+		sl_panel_1.putConstraint(SpringLayout.NORTH, cmdSendBtn, 46, SpringLayout.NORTH, panel_1);
+		sl_panel_1.putConstraint(SpringLayout.WEST, cmdSendBtn, 10, SpringLayout.WEST, panel_1);
+		cmdSendBtn.addActionListener(this);
+		panel_1.add(cmdSendBtn);
 		
-		JTextArea srvResponseConsole = new JTextArea();
-		sl_panel_1.putConstraint(SpringLayout.EAST, srvResponseConsole, 543, SpringLayout.WEST, panel_1);
-		srvResponseConsole.setFont(new Font("Lucida Sans Typewriter", Font.PLAIN, 11));
+		srvResponseConsole = new JTextArea();
+		sl_panel_1.putConstraint(SpringLayout.WEST, srvResponseConsole, 0, SpringLayout.WEST, cmdSendBtn);
+		sl_panel_1.putConstraint(SpringLayout.SOUTH, srvResponseConsole, -10, SpringLayout.SOUTH, panel_1);
+		sl_panel_1.putConstraint(SpringLayout.EAST, srvResponseConsole, -10, SpringLayout.EAST, panel_1);
+		srvResponseConsole.setFont(new Font("Lucida Sans Typewriter", Font.PLAIN, 9));
 		srvResponseConsole.setForeground(Color.WHITE);
 		srvResponseConsole.setBackground(Color.DARK_GRAY);
-		sl_panel_1.putConstraint(SpringLayout.NORTH, srvResponseConsole, 108, SpringLayout.SOUTH, srvCmdGetStatusBtn);
-		sl_panel_1.putConstraint(SpringLayout.WEST, srvResponseConsole, 10, SpringLayout.WEST, panel_1);
-		sl_panel_1.putConstraint(SpringLayout.SOUTH, srvResponseConsole, -10, SpringLayout.SOUTH, panel_1);
-		srvResponseConsole.setText("..srv reponses go here");
 		panel_1.add(srvResponseConsole);
 		
 		JLabel lblResponseConsole = new JLabel("Response Console");
-		sl_panel_1.putConstraint(SpringLayout.WEST, lblResponseConsole, 10, SpringLayout.WEST, panel_1);
-		sl_panel_1.putConstraint(SpringLayout.SOUTH, lblResponseConsole, -6, SpringLayout.NORTH, srvResponseConsole);
+		sl_panel_1.putConstraint(SpringLayout.NORTH, srvResponseConsole, 6, SpringLayout.SOUTH, lblResponseConsole);
+		sl_panel_1.putConstraint(SpringLayout.NORTH, lblResponseConsole, 6, SpringLayout.SOUTH, cmdSendBtn);
+		sl_panel_1.putConstraint(SpringLayout.WEST, lblResponseConsole, 0, SpringLayout.WEST, cmdSendBtn);
 		panel_1.add(lblResponseConsole);
+		
+		inputCmdField = new TextField();
+		inputCmdField.setForeground(Color.WHITE);
+		sl_panel_1.putConstraint(SpringLayout.WEST, inputCmdField, 0, SpringLayout.WEST, cmdSendBtn);
+		sl_panel_1.putConstraint(SpringLayout.SOUTH, inputCmdField, -6, SpringLayout.NORTH, cmdSendBtn);
+		sl_panel_1.putConstraint(SpringLayout.EAST, inputCmdField, 0, SpringLayout.EAST, cmdSendBtn);
+		inputCmdField.setBackground(Color.DARK_GRAY);
+		panel_1.add(inputCmdField);
 		
 		Label label = new Label("Version 0.1");
 		label.setAlignment(Label.RIGHT);
@@ -292,8 +297,7 @@ public class View extends JFrame implements ActionListener,TextListener
 	}
 		
 	/*
-	 * Fires save event
-	 * Sets save-status label 
+	 * == EVENTS ==
 	 */
 	public void FireSaveSettingsEvent(SettingsActionEvent event)
 	{		
@@ -301,43 +305,51 @@ public class View extends JFrame implements ActionListener,TextListener
 		{
 			if(this.settingsListener.SaveAction(event))
 			{
-				this.settingsStatusLabel.setForeground(new Color(46, 139, 87));
-				this.settingsStatusLabel.setText("Configuration stored");
+				this.presentDataView.SetStatusTxtMsg(LABEL_STATUS_SAVED, true);
 			}
 		}
 	}
 	
-	// Initial Connect , will set the status info if successful
-	public void FireTestConnSettingsEvent(SettingsActionEvent event)
+	public void FireConnSettingsEvent(SettingsActionEvent event)
 	{		
 		if(this.settingsListener != null)
 		{
-			String response = this.settingsListener.TestConnAction(event);
+			String response = this.settingsListener.ConnAction(event);
 			if(response == null)
 			{
-				this.settingsStatusLabel.setForeground(new Color(178,34,34));
-				this.settingsStatusLabel.setText("Connection timeout, check port & ip");
+				this.lastConnStatus = false;
+				this.presentDataView.SetStatusTxtMsg(LABEL_STATUS_TIMEOUT, false);
 			}
 			else
 			{			
+				this.lastConnStatus = true;
 				this.presentDataView.SetStatus(response);				
 			}
 		}
 	}
 	
-	/*
-	 * Listeners
-	 */
-	public void SetSettingsListener(SettingsActionListener settingsListener)
+	public void FireConnCmdEvent(SettingsActionEvent event)
 	{
-		this.settingsListener = settingsListener;
-		
+		if(this.settingsListener != null)
+		{
+			// Prepend
+			String response = this.settingsListener.ConnAction(event);
+			if(response != null)
+			{
+				String existingText = this.srvResponseConsole.getText();
+				this.srvResponseConsole.setText("\n\n" + response + "\n" + existingText);
+			}
+		}
 	}
 	
 	/*
-	 * Non-vital
-	 * Changes in the input-fields represented in status-label
+	 * == LISTENERS ==
 	 */
+	public void SetSettingsListener(ISettingsActionListener settingsListener)
+	{
+		this.settingsListener = settingsListener;
+	}
+	
 	@Override
 	public void textValueChanged(TextEvent arg)
 	{		
@@ -345,13 +357,11 @@ public class View extends JFrame implements ActionListener,TextListener
 		   this.settingsPortField.getText().equals(this.settingsModel.GetPort()) && 
 		   this.settingsRconPField.getText().equals(this.settingsModel.GetRconPass()))
 		{
-			this.settingsStatusLabel.setForeground(new Color(46, 139, 87));
-			this.settingsStatusLabel.setText("Input equals stored config");
+			this.presentDataView.SetStatusTxtMsg(LABEL_STATUS_MSG_VALID_TEXT, true);
 		}
 		else
 		{
-			this.settingsStatusLabel.setForeground(new Color(178,34,34));
-			this.settingsStatusLabel.setText("Fields were modified, save to use changes");
+			this.presentDataView.SetStatusTxtMsg(LABEL_STATUS_MSG_CHANGED_TEXT, false);
 		}
 	}
 	
@@ -362,18 +372,24 @@ public class View extends JFrame implements ActionListener,TextListener
 	@Override
 	public void actionPerformed(ActionEvent e)
 	{
-		JButton mySource = (JButton)e.getSource();
+		JButton mySource = (JButton)e.getSource();				
 		
-		
+		// Save
 		if(mySource.getText() == LABEL_SETTINGS_SAVE)
 		{
-			this.FireSaveSettingsEvent(new SettingsActionEvent(this.settingsIpField.getText(),this.settingsPortField.getText(),this.settingsRconPField.getText()));
+			this.FireSaveSettingsEvent(new SettingsActionEvent(this.settingsIpField.getText(),this.settingsPortField.getText(),this.settingsRconPField.getText(),null));
+		}
+			
+		// Initial Connect
+		if(mySource.getText() == LABEL_SETTINGS_CONNECT)
+		{
+			this.FireConnSettingsEvent(new SettingsActionEvent(this.settingsIpField.getText(),this.settingsPortField.getText(),this.settingsRconPField.getText(),null));
 		}
 		
-		
-		if(mySource.getText() == LABEL_SETTINGS_TEST)
+		// Connect & Send Cmd
+		if(mySource.getText() == LABEL_CMD_INPUT && this.lastConnStatus)
 		{
-			this.FireTestConnSettingsEvent(new SettingsActionEvent(this.settingsIpField.getText(),this.settingsPortField.getText(),this.settingsRconPField.getText()));
+			this.FireConnCmdEvent(new SettingsActionEvent(this.settingsIpField.getText(),this.settingsPortField.getText(),this.settingsRconPField.getText(), this.inputCmdField.getText()));
 		}
 	}
 }

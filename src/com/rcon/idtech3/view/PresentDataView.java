@@ -27,11 +27,7 @@ public class PresentDataView
 		String punkbuster = parts[50];
 		String pure = parts[52];
 		
-		System.out.println(gametype);
-		
 		//splitResponse = splitResponse.replace("_", "");
-		System.out.println(map);
-		System.out.println(response);
 		
 		// Set labels
 		this.view.servername.setText(servername);
@@ -41,6 +37,20 @@ public class PresentDataView
 		this.view.punkbuster.setText(punkbuster);
 		this.view.pure.setText(pure);
 	
+	}
+	
+	public void SetStatusTxtMsg(String msg, boolean color)
+	{
+		if(color)
+		{
+			this.view.settingsStatusLabel.setForeground(new Color(46, 139, 87));
+		}
+		else
+		{
+			this.view.settingsStatusLabel.setForeground(new Color(178,34,34));
+		}
+		
+		this.view.settingsStatusLabel.setText(msg);
 	}
 	
 

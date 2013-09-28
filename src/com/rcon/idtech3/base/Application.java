@@ -34,7 +34,7 @@ public class Application
 		ServerCod4Model serverCod4Model = new ServerCod4Model();
 		
 		// View
-		View view = new View(settingsModel,serverCod4Model);
+		View view = new View(settingsModel);
 		
 		// Controller
 		Controller controller = new Controller(view,settingsModel,serverCod4Model);

@@ -5,12 +5,14 @@ public class SettingsActionEvent
 	private String ip;
 	private String port;
 	private String rconPass;
+	private String cmd;
 	
-	public SettingsActionEvent(String ip, String port, String rconPass)
+	public SettingsActionEvent(String ip, String port, String rconPass, String cmd)
 	{
 		this.ip = ip;
 		this.port = port;
 		this.rconPass = rconPass;
+		this.cmd = cmd;
 	}
 
 	public String GetIp()
@@ -41,6 +43,16 @@ public class SettingsActionEvent
 	public void SetRconPass(String rconPass)
 	{
 		this.rconPass = rconPass;
+	}
+	
+	public String GetCmd()
+	{
+		return cmd;
+	}
+
+	public void SetCmd(String cmd)
+	{
+		this.cmd = cmd;
 	}
 	
 	

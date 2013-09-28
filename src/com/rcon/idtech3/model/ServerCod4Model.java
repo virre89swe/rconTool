@@ -11,23 +11,29 @@ public class ServerCod4Model extends ServerModel
 {
 	public ServerCod4Model()
 	{
-		try 
+		// Moved to connect clause to be able to close/open all the time in future might create thread
+		/*try 
 		{
 			this.ds = new DatagramSocket();
 		} 
 		catch (SocketException e) 
 		{
 			e.printStackTrace();
-		}
+		}*/
 	}
 	
 	public boolean Connect(String ip, String port)
 	{
 		try 
 		{
+			this.ds = new DatagramSocket();
 			this.ia = InetAddress.getByName(ip);
 		} 
 		catch (UnknownHostException e) 
+		{
+			e.printStackTrace();
+			return false;
+		} catch (SocketException e)
 		{
 			e.printStackTrace();
 			return false;
@@ -40,9 +46,13 @@ public class ServerCod4Model extends ServerModel
 	{	
 		String response = null;
 		
-		if(rcon == null)
+		if(cmd == null)
 		{
 			cmd = "xxxxgetstatus";
+		}
+		else
+		{
+			cmd = "xxxxrcon " + rcon + "  " + cmd;
 		}
 		
 		int portInt = Integer.parseInt(port);
@@ -81,6 +91,7 @@ public class ServerCod4Model extends ServerModel
 				e.printStackTrace();
 			}
 		}
+		ds.close();
 		return response;
 	}
 }

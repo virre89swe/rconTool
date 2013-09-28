@@ -3,10 +3,10 @@ package com.rcon.idtech3.controller;
 import com.rcon.idtech3.model.ServerCod4Model;
 import com.rcon.idtech3.model.SettingsModel;
 import com.rcon.idtech3.view.SettingsActionEvent;
-import com.rcon.idtech3.view.SettingsActionListener;
+import com.rcon.idtech3.view.ISettingsActionListener;
 import com.rcon.idtech3.view.View;
 
-public class Controller implements SettingsActionListener
+public class Controller implements ISettingsActionListener
 {
 	@SuppressWarnings("unused")
 	private View view;
@@ -32,18 +32,14 @@ public class Controller implements SettingsActionListener
 	{			
 		if(this.settingsModel.SettingsSaveConfiguration(event.GetIp(), event.GetPort(), event.GetRconPass()))
 		{
-			System.out.println("Saved configuration test");
 			return true;
 		}
 		return false;
 	}
 	
-	public String TestConnAction(SettingsActionEvent event)
+	public String ConnAction(SettingsActionEvent event)
 	{
-		String value = this.serverCod4Model.SendSrvCmd(this.settingsModel.GetIp(), this.settingsModel.GetPort(),null,null);
-		System.out.println(value);
-		return value;
-		
-	}
-	
+		String value = this.serverCod4Model.SendSrvCmd(this.settingsModel.GetIp(), this.settingsModel.GetPort(), this.settingsModel.GetRconPass(), event.GetCmd());
+		return value;		
+	}	
 }

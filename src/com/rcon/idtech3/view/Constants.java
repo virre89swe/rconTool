@@ -3,7 +3,7 @@ package com.rcon.idtech3.view;
 public final class Constants
 {
 	// DIR Constants
-	public static final String PATH_ASSETS_IMAGES = "assets/images/";
+	public static final String PATH_ASSETS_IMAGES = "/images/";
 	
 	// Button Labels
 	public static final String LABEL_SETTINGS_SAVE = "Save";

@@ -52,6 +52,4 @@ public class PresentDataView
 		
 		this.view.settingsStatusLabel.setText(msg);
 	}
-	
-
 }

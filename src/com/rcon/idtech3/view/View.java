@@ -12,6 +12,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.TextEvent;
 import java.awt.event.TextListener;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -25,13 +27,18 @@ import javax.swing.JTextArea;
 import javax.swing.SpringLayout;
 import javax.swing.border.EmptyBorder;
 
+import com.rcon.idtech3.base.Application;
+import com.rcon.idtech3.helper.LoggHelper;
 import com.rcon.idtech3.model.SettingsModel;
 
 import static com.rcon.idtech3.view.Constants.*;
 
 @SuppressWarnings("serial")
-public class View extends JFrame implements ActionListener,TextListener
+public class View extends JFrame implements ActionListener,TextListener,Runnable
 {
+	// Logger
+	private final static Logger LOGGER = Logger.getLogger(Application.class.getName());
+	
 	// Views
 	private PresentDataView presentDataView;
 	
@@ -70,7 +77,10 @@ public class View extends JFrame implements ActionListener,TextListener
 	{
 		super("Remote Console : Id Tech 3");
 		
-		
+		// Logger
+		// Initialize logger
+		LoggHelper.InitLogger(LOGGER, "Temp.log");
+		LOGGER.setLevel(Level.ALL);
 
 		// AppIcon (from source folder)
 		this.setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource(PATH_ASSETS_IMAGES + "quakeIcon.png")));
@@ -332,7 +342,6 @@ public class View extends JFrame implements ActionListener,TextListener
 	{
 		if(this.settingsListener != null)
 		{
-			// Prepend
 			String response = this.settingsListener.ConnAction(event);
 			if(response != null)
 			{
@@ -386,10 +395,36 @@ public class View extends JFrame implements ActionListener,TextListener
 			this.FireConnSettingsEvent(new SettingsActionEvent(this.settingsIpField.getText(),this.settingsPortField.getText(),this.settingsRconPField.getText(),null));
 		}
 		
-		// Connect & Send Cmd
+		// Connect & Send Command
 		if(mySource.getText() == LABEL_CMD_INPUT && this.lastConnStatus)
 		{
 			this.FireConnCmdEvent(new SettingsActionEvent(this.settingsIpField.getText(),this.settingsPortField.getText(),this.settingsRconPField.getText(), this.inputCmdField.getText()));
 		}
 	}
+	
+	
+	/*
+	 *  Thread gets new status if connection is okay
+	 */
+	@Override
+	public void run()
+	{		
+		try
+		{
+			while(true)
+			{
+				Thread.sleep(10*1000);
+				if(lastConnStatus)
+				{
+					this.FireConnSettingsEvent(new SettingsActionEvent(this.settingsIpField.getText(),this.settingsPortField.getText(),this.settingsRconPField.getText(),null));					
+					System.out.println("Getting new status");
+				}
+			}
+		}
+		catch(InterruptedException e)
+		{
+			LOGGER.warning("Thread interrupted : " + e);
+		}
+	}
+
 }

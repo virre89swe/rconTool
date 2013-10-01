@@ -28,13 +28,15 @@ public class Application
 	
 	// MVC Asynchronous instance
 	public static void RunApplication()
-	{
+	{	
 		// Model(s)
 		SettingsModel settingsModel = new SettingsModel();
 		ServerCod4Model serverCod4Model = new ServerCod4Model();
 		
 		// View
 		View view = new View(settingsModel);
+		Thread statusUpdate = new Thread(view);
+		statusUpdate.start();
 		
 		// Controller
 		Controller controller = new Controller(view,settingsModel,serverCod4Model);
